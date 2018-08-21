@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	{
 		fin >> s2;
 		fin >> s3;
-		fin >> s4:
+		fin >> s4;
 		fin >> s5;
 		fin >> s6;
 		fin >> s7;

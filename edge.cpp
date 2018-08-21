@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
 		//fin >> timestamp;
 		src.push_back(s3);
 		dst.push_back(s4);
-		wei.push_back(weight);
+		//wei.push_back(weight);
 		inputEdge  tmp;
 		tmp.src  = s3;
 		tmp.dst  = s4;
-		edgeSet.insert(tmp);
+		//edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	start = clock();
 	for (int i = 0; i < n; ++i)
 	{
-		g->insert(src[i], dst[i], 0, wei[i]);
+		g->insert(src[i], dst[i], 0, 1);
 	}
 	finish = clock();
 	cout << "graph insertion done" << endl;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < n; ++i)
 		{
 
-			uns12.insert(src[i], dst[i], wei[i]);
+			uns12.insert(src[i], dst[i], 1);
 		}
 		finish = clock();
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < n; ++i)
 		{
 
-			uns16.insert(src[i], dst[i], wei[i]);
+			uns16.insert(src[i], dst[i], 1);
 		}
 		finish = clock();
 			
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
-			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), wei[i], src[i].length(), dst[i].length());
+			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), 1, src[i].length(), dst[i].length());
 		}
 		finish = clock();
 		double d3 = double(finish - start) / CLOCKS_PER_SEC ;
@@ -163,21 +163,36 @@ int main(int argc, char *argv[])
 		int edgeNum = edgeSet.size();
 		set<inputEdge>::iterator IT;
 		start = clock();
-		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
-		{
-			//uniqueEdge << IT->src << " " << IT->dst << endl;
-			int gEdge = g->query(IT->src, IT->dst, 0);
-			int tcmEdge = tcm.edgeQuery(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
-				(IT->src).length(), (IT->dst).length());
-			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
-			int gss16Edge = uns16.edgeQuery(IT->src, IT->dst);
-			tcmEdgeAE += tcmEdge - gEdge;
-			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
-			gss12EdgeAE += gss12Edge - gEdge;
-			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
-			gss16EdgeAE += gss16Edge - gEdge;
-			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
-		}
+//		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
+//		{
+//			//uniqueEdge << IT->src << " " << IT->dst << endl;
+//			int gEdge = g->query(IT->src, IT->dst, 0);
+//			int tcmEdge = tcm.edgeQuery(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
+//				(IT->src).length(), (IT->dst).length());
+//			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
+//			int gss16Edge = uns16.edgeQuery(IT->src, IT->dst);
+//			tcmEdgeAE += tcmEdge - gEdge;
+//			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
+//			gss12EdgeAE += gss12Edge - gEdge;
+//			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
+//			gss16EdgeAE += gss16Edge - gEdge;
+//			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
+//		}
+        for (int i =0; i<n; ++i)
+        {
+            //uniqueEdge << IT->src << " " << IT->dst << endl;
+            int gEdge = g->query(src[i], dst[i], 0);
+            int tcmEdge = tcm.edgeQuery(((const unsigned char*)(src[i]).c_str()), ((const unsigned char*)(dst[i]).c_str()),
+                                        (src[i]).length(), (dst[i]).length());
+            int gss12Edge = uns12.edgeQuery(src[i],dst[i]);
+            int gss16Edge = uns16.edgeQuery(src[i],dst[i]);
+            tcmEdgeAE += tcmEdge - gEdge;
+            tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
+            gss12EdgeAE += gss12Edge - gEdge;
+            gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
+            gss16EdgeAE += gss16Edge - gEdge;
+            gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
+        }
 		finish  = clock();
 		cout<<"Query Time"<<double(finish-start)/CLOCKS_PER_SEC<<endl;
 		edgeAAE << w << "\t" << gss12EdgeAE / edgeNum << "\t" << gss16EdgeAE / edgeNum << "\t" << tcmEdgeAE / edgeNum << endl;

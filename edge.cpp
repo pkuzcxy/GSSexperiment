@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 		start = clock();
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
-			uniqueEdge << IT->src << " " << IT->dst << endl;
+			//uniqueEdge << IT->src << " " << IT->dst << endl;
 			int gEdge = g->query(IT->src, IT->dst, 0);
 			int tcmEdge = tcm.edgeQuery(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
 				(IT->src).length(), (IT->dst).length());
@@ -178,8 +178,8 @@ int main(int argc, char *argv[])
 			gss16EdgeAE += gss16Edge - gEdge;
 			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
 		}
-		end = clock();
-		cout<< double(end-start)/CLOCK_PER_SEC<<endl;
+		finish  = clock();
+		cout<<"Query Time"<<double(finish-start)/CLOCKS_PER_SEC<<endl;
 		edgeAAE << w << "\t" << gss12EdgeAE / edgeNum << "\t" << gss16EdgeAE / edgeNum << "\t" << tcmEdgeAE / edgeNum << endl;
 		edgeARE << w << "\t" << gss12EdgeRE / edgeNum << "\t" << gss16EdgeRE / edgeNum << "\t" << tcmEdgeRE / edgeNum << endl;
 	}

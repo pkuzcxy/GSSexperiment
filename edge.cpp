@@ -26,6 +26,10 @@ public:
 int main(int argc, char *argv[])
 {
 	string filename = argv[1];
+	int low,high,interval;
+	low = stoi(argv[2]);
+	high = stoi(argv[3]);
+	interval = stoi(argv[4]);
 	ifstream fin(filename);
 	graph *g = new graph();
 
@@ -33,20 +37,25 @@ int main(int argc, char *argv[])
 	set<inputEdge> edgeSet;
 	vector<string> dst;
 	vector<int> wei;
-	string s1, s2;
+	string s1, s2,s3,s4,s5,s6,s7;
 	while (fin >> s1)
 	{
 		fin >> s2;
+		fin >> s3;
+		fin >> s4:
+		fin >> s5;
+		fin >> s6;
+		fin >> s7;
 		int weight;
-		fin >> weight;
+		weight= 1;
 		int timestamp;
-		fin >> timestamp;
-		src.push_back(s1);
-		dst.push_back(s2);
+		//fin >> timestamp;
+		src.push_back(s3);
+		dst.push_back(s4);
 		wei.push_back(weight);
 		inputEdge  tmp;
-		tmp.src  = s1;
-		tmp.dst  = s2;
+		tmp.src  = s3;
+		tmp.dst  = s4;
 		edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;
@@ -62,6 +71,7 @@ int main(int argc, char *argv[])
 	finish = clock();
 	cout << "graph insertion done" << endl;
 	double gtime = double(finish - start) / CLOCKS_PER_SEC;
+	cout<<"time:"<<gtime<<endl;
 	gtime = n / gtime / MILLION;
 
 	
@@ -71,7 +81,7 @@ int main(int argc, char *argv[])
 	edgeAAE << "Width"  << "\t" << "fsize=12" << "\t" << "fsize=16" << "\t" << "TCM(8*memory)" << endl;
 	edgeARE << "Width" << "\t" << "fsize=12" << "\t" << "fsize=16" << "\t" << "TCM(8*memory)" << endl;
 
-	for (int w = 700; w <= 1200; w += 50)
+	for (int w = low; w <= high; w += interval)
 	{
 
 		int tcm_w = w*4.5;//tcm 32bit/room,gss (2fsize+4bit index+32bit)/room
@@ -91,6 +101,7 @@ int main(int argc, char *argv[])
 		finish = clock();
 
 		double d1 = double(finish - start) / CLOCKS_PER_SEC ;
+		cout<<"GSS12 time:"<<d1<<endl;
 		d1 = n/d1/MILLION;
 		cout << "GSS12 insertion done:" <<d1<<endl;
 
@@ -101,7 +112,7 @@ int main(int argc, char *argv[])
 			uns16.insert(src[i], dst[i], wei[i]);
 		}
 		finish = clock();
-
+			
 		double d2 = double(finish - start) / CLOCKS_PER_SEC;
 		d2 = n / d2 / MILLION;
 		cout << "GSS16 insertion done:" << d1 << endl;
@@ -151,6 +162,7 @@ int main(int argc, char *argv[])
 		double gss16EdgeRE = 0;
 		int edgeNum = edgeSet.size();
 		set<inputEdge>::iterator IT;
+		start = clock();
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
 			uniqueEdge << IT->src << " " << IT->dst << endl;
@@ -166,6 +178,8 @@ int main(int argc, char *argv[])
 			gss16EdgeAE += gss16Edge - gEdge;
 			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
 		}
+		end = clock();
+		cout<< double(end-start)/CLOCK_PER_SEC<<endl;
 		edgeAAE << w << "\t" << gss12EdgeAE / edgeNum << "\t" << gss16EdgeAE / edgeNum << "\t" << tcmEdgeAE / edgeNum << endl;
 		edgeARE << w << "\t" << gss12EdgeRE / edgeNum << "\t" << gss16EdgeRE / edgeNum << "\t" << tcmEdgeRE / edgeNum << endl;
 	}

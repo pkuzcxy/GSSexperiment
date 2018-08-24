@@ -15,11 +15,11 @@ using namespace std;
 class inputEdge
 {
 public:
-	char* src;
-	char* dst;
+	char src[16];
+	char dst[16];
 	bool operator <(const inputEdge & a)const
 	{
-		if (src == a.src&&dst == a.dst)return false;
+		if (strcmp(src,a.src)==0&&strcmp(dst,a.dst)==0)return false;
 		return true;
 	}
 };

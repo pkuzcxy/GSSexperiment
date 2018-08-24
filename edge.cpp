@@ -85,6 +85,8 @@ int main(int argc, char *argv[])
 	for (int w = low; w <= high; w += interval)
 	{
 
+		double exp_begin, exp_end;
+		exp_begin = clock();
 		int tcm_w = w*4.5;//tcm 32bit/room,gss (2fsize+4bit index+32bit)/room
 		int uns16_w = w;
 		int uns12_w = 1.07*w;
@@ -205,6 +207,8 @@ int main(int argc, char *argv[])
 		cout << "Query Time" << double(finish - start) / CLOCKS_PER_SEC << endl;
 		edgeAAE << w << "\t" << gss12EdgeAE / edgeNum << "\t" << gss16EdgeAE / edgeNum << "\t" << tcmEdgeAE / edgeNum << endl;
 		edgeARE << w << "\t" << gss12EdgeRE / edgeNum << "\t" << gss16EdgeRE / edgeNum << "\t" << tcmEdgeRE / edgeNum << endl;
+		exp_end = clock();
+		cout << "exp time:" << double(exp_end - exp_begin) / CLOCKS_PER_SEC;
 	}
 	return 0;
 }

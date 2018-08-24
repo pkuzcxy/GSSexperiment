@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
 	string filename = argv[1];
 	int low, high, interval;
 	low = stoi(argv[2]);
-	high = stoi(argv[3]);
-	interval = stoi(argv[4]);
+	high = stoi(argv[4]);
+	interval = stoi(argv[3]);
 	int testEdgeNum = stoi(argv[5]);
 	ifstream fin(filename);
 	graph *g = new graph();
@@ -38,9 +38,10 @@ int main(int argc, char *argv[])
 	set<inputEdge> edgeSet;
 	vector<char*> dst;
 	vector<int> wei;
-	char  s1[16], s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
+	char  s1[16];
 	while (fin >> s1)
 	{
+		char s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
 		fin >> s2;
 		fin >> s3;
 		fin >> s4;

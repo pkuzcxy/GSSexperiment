@@ -133,22 +133,16 @@ int main(int argc, char *argv[])
 		finish = clock();
 		cout << "TCM Query Time" << double(finish - start) / CLOCKS_PER_SEC << endl;
 		tcmvectorAAE.push_back(tcmEdgeAE / edgeNum);	
-		tcmvectorARE.push_back(tcmEdgeAE / edgeNum);
+		tcmvectorARE.push_back(tcmEdgeRE / edgeNum);
 	}
 	for (int w = low; w <= high; w += interval)
 	{
-
-		double exp_begin, exp_end;
-		exp_begin = clock();
 
 		int uns16_w = w;
 		GSS uns16(uns16_w, 12, 16, 1, 4, 16);
 		int n = src.size();
 
 		clock_t start, finish;
-		start = clock();
-
-
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
@@ -189,7 +183,6 @@ int main(int argc, char *argv[])
 				edgeNum = testEdgeNum;
 				break;
 			}
-			//uniqueEdge << IT->src << " " << IT->dst << endl;
 			int gEdge = g->query(src[i], dst[i], 0);
 		
 			int gss16Edge = uns16.edgeQuery(src[i], dst[i]);
@@ -203,6 +196,7 @@ int main(int argc, char *argv[])
 		uns16vectorAAE.push_back(gss16EdgeAE / edgeNum);
 		uns16vectorARE.push_back(gss16EdgeRE / edgeNum);
 	}
+
 	for (int w = low; w <= high; w += interval)
 	{
 
@@ -256,7 +250,6 @@ int main(int argc, char *argv[])
 				break;
 			}
 			int gEdge = g->query(src[i], dst[i], 0);
-	
 			int gss12Edge = uns12.edgeQuery(src[i], dst[i]);
 			gss12EdgeAE += gss12Edge - gEdge;
 			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
@@ -275,9 +268,6 @@ int main(int argc, char *argv[])
 		edgeAAE << widthVector[i] << "\t" << uns12vectorAAE[i] << "\t" << uns16vectorAAE[i] << "\t" << tcmvectorAAE[i] << endl;
 		edgeARE << widthVector[i] << "\t" << uns12vectorARE[i] << "\t" << uns16vectorARE[i] << "\t" << tcmvectorARE[i] << endl;
 	}
-
-
-
 	//for (int w = low; w <= high; w += interval)
 	//{
 

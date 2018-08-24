@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 		//wei.push_back(weight);
 		inputEdge  tmp;
 		strcpy(tmp.src,s3);
-		strcoy(tmp.dst,s4);
+		strcpy(tmp.dst,s4);
 		edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;

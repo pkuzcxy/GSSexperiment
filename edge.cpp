@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 		strcpy(tmp.dst,s4);
 		edgeSet.insert(tmp);
 	}
-	return 0
+	return 0;
 	cout << "unique edge num:" << edgeSet.size() << endl;
 
 	fin.close();

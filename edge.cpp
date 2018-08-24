@@ -124,10 +124,9 @@ int main(int argc, char *argv[])
 			int gEdge = g->query(src[i], dst[i], 0);
 			int tcmEdge = tcm.edgeQuery((const unsigned char*)src[i], (const unsigned char*)dst[i],
 				strlen(src[i]), strlen(dst[i]));
-
+			if (gEdge == 0)cout << "runrun"<<src[i]<<" "<<dst[i] << endl;
 			tcmEdgeAE += tcmEdge - gEdge;
 			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
-	
 
 		}
 		finish = clock();

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 		fin >> s5;
 		fin >> s6;
 		fin >> s7;
-		cout << s1 " "  << s2 << " " << s3 << " " << s4 << endl;
+		if (strlen(s3) == 0 || strlen(s4) == 0)continue;
 		int weight;
 		weight = 1;
 		int timestamp;

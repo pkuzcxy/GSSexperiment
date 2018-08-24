@@ -15,8 +15,8 @@ using namespace std;
 class inputEdge
 {
 public:
-	string src;
-	string dst;
+	char* src;
+	char* dst;
 	bool operator <(const inputEdge & a)const
 	{
 		if (src == a.src&&dst == a.dst)return false;
@@ -26,18 +26,19 @@ public:
 int main(int argc, char *argv[])
 {
 	string filename = argv[1];
-	int low,high,interval;
+	int low, high, interval;
 	low = stoi(argv[2]);
 	high = stoi(argv[3]);
 	interval = stoi(argv[4]);
+	int testEdgeNum = stoi(argv[5]);
 	ifstream fin(filename);
 	graph *g = new graph();
 
-	vector<string> src;
+	vector<char*> src;
 	set<inputEdge> edgeSet;
-	vector<string> dst;
+	vector<char*> dst;
 	vector<int> wei;
-	string s1, s2,s3,s4,s5,s6,s7;
+	char  s1[16], s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
 	while (fin >> s1)
 	{
 		fin >> s2;
@@ -47,16 +48,16 @@ int main(int argc, char *argv[])
 		fin >> s6;
 		fin >> s7;
 		int weight;
-		weight= 1;
+		weight = 1;
 		int timestamp;
 		//fin >> timestamp;
 		src.push_back(s3);
 		dst.push_back(s4);
 		//wei.push_back(weight);
 		inputEdge  tmp;
-		tmp.src  = s3;
-		tmp.dst  = s4;
-		//edgeSet.insert(tmp);
+		tmp.src = s3;
+		tmp.dst = s4;
+		edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;
 
@@ -71,24 +72,25 @@ int main(int argc, char *argv[])
 	finish = clock();
 	cout << "graph insertion done" << endl;
 	double gtime = double(finish - start) / CLOCKS_PER_SEC;
-	cout<<"time:"<<gtime<<endl;
+	cout << "time:" << gtime << endl;
 	gtime = n / gtime / MILLION;
 
-	
 
-	ofstream edgeAAE(filename+"edgeQueryAAE.txt");
+
+	ofstream edgeAAE(filename + "edgeQueryAAE.txt");
 	ofstream edgeARE(filename + "edgeQueryARE.txt");
-	edgeAAE << "Width"  << "\t" << "fsize=12" << "\t" << "fsize=16" << "\t" << "TCM(8*memory)" << endl;
+	edgeAAE << "Width" << "\t" << "fsize=12" << "\t" << "fsize=16" << "\t" << "TCM(8*memory)" << endl;
 	edgeARE << "Width" << "\t" << "fsize=12" << "\t" << "fsize=16" << "\t" << "TCM(8*memory)" << endl;
 
 	for (int w = low; w <= high; w += interval)
 	{
 
 		int tcm_w = w*4.5;//tcm 32bit/room,gss (2fsize+4bit index+32bit)/room
-		int uns_w = w;
+		int uns16_w = w;
+		int uns12_w = 1.07*w;
 		TCM tcm(tcm_w, tcm_w, 4);
-		GSS uns12(uns_w, 8, 8, 1, 4, 12);
-		GSS uns16(uns_w, 8, 8, 1, 4, 16);
+		GSS uns12(uns12_w, 12, 16, 1, 4, 12);
+		GSS uns16(uns16_w, 12, 16, 1, 4, 16);
 		int n = src.size();
 
 		clock_t start, finish;
@@ -100,10 +102,10 @@ int main(int argc, char *argv[])
 		}
 		finish = clock();
 
-		double d1 = double(finish - start) / CLOCKS_PER_SEC ;
-		cout<<"GSS12 time:"<<d1<<endl;
-		d1 = n/d1/MILLION;
-		cout << "GSS12 insertion done:" <<d1<<endl;
+		double d1 = double(finish - start) / CLOCKS_PER_SEC;
+		cout << "GSS12 time:" << d1 << endl;
+		d1 = n / d1 / MILLION;
+		cout << "GSS12 insertion done:" << d1 << endl;
 
 		start = clock();
 		for (int i = 0; i < n; ++i)
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
 			uns16.insert(src[i], dst[i], 1);
 		}
 		finish = clock();
-			
+
 		double d2 = double(finish - start) / CLOCKS_PER_SEC;
 		d2 = n / d2 / MILLION;
 		cout << "GSS16 insertion done:" << d1 << endl;
@@ -121,13 +123,13 @@ int main(int argc, char *argv[])
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
-			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), 1, src[i].length(), dst[i].length());
+			tcm.insert((const unsigned char*)src[i], (const unsigned char*)dst[i], 1, strlen(src[i]), strlen(dst[i]));
 		}
 		finish = clock();
-		double d3 = double(finish - start) / CLOCKS_PER_SEC ;
-		d3 = n/d3/MILLION;
+		double d3 = double(finish - start) / CLOCKS_PER_SEC;
+		d3 = n / d3 / MILLION;
 		cout << "TCM insertion done:" << d3 << endl;
-		cout<<w<<"\t" << gtime << "\t" << d1 << "\t" << d2 << "\t" << d3 << endl;
+		cout << w << "\t" << gtime << "\t" << d1 << "\t" << d2 << "\t" << d3 << endl;
 		int sum = 0;
 		for (int i = 0; i < uns12.n; i++)
 		{
@@ -163,38 +165,44 @@ int main(int argc, char *argv[])
 		int edgeNum = edgeSet.size();
 		set<inputEdge>::iterator IT;
 		start = clock();
-//		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
-//		{
-//			//uniqueEdge << IT->src << " " << IT->dst << endl;
-//			int gEdge = g->query(IT->src, IT->dst, 0);
-//			int tcmEdge = tcm.edgeQuery(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
-//				(IT->src).length(), (IT->dst).length());
-//			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
-//			int gss16Edge = uns16.edgeQuery(IT->src, IT->dst);
-//			tcmEdgeAE += tcmEdge - gEdge;
-//			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
-//			gss12EdgeAE += gss12Edge - gEdge;
-//			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
-//			gss16EdgeAE += gss16Edge - gEdge;
-//			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
-//		}
-        for (int i =0; i<n; ++i)
-        {
-            //uniqueEdge << IT->src << " " << IT->dst << endl;
-            int gEdge = g->query(src[i], dst[i], 0);
-            int tcmEdge = tcm.edgeQuery(((const unsigned char*)(src[i]).c_str()), ((const unsigned char*)(dst[i]).c_str()),
-                                        (src[i]).length(), (dst[i]).length());
-            int gss12Edge = uns12.edgeQuery(src[i],dst[i]);
-            int gss16Edge = uns16.edgeQuery(src[i],dst[i]);
-            tcmEdgeAE += tcmEdge - gEdge;
-            tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
-            gss12EdgeAE += gss12Edge - gEdge;
-            gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
-            gss16EdgeAE += gss16Edge - gEdge;
-            gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
-        }
-		finish  = clock();
-		cout<<"Query Time"<<double(finish-start)/CLOCKS_PER_SEC<<endl;
+		//		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
+		//		{
+		//			//uniqueEdge << IT->src << " " << IT->dst << endl;
+		//			int gEdge = g->query(IT->src, IT->dst, 0);
+		//			int tcmEdge = tcm.edgeQuery(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
+		//				(IT->src).length(), (IT->dst).length());
+		//			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
+		//			int gss16Edge = uns16.edgeQuery(IT->src, IT->dst);
+		//			tcmEdgeAE += tcmEdge - gEdge;
+		//			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
+		//			gss12EdgeAE += gss12Edge - gEdge;
+		//			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
+		//			gss16EdgeAE += gss16Edge - gEdge;
+		//			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
+		//		}
+		for (int i = 0; i<n; ++i)
+		{
+			if (i == testEdgeNum)
+			{
+				edgeNum = testEdgeNum;
+				break;
+			}
+			//uniqueEdge << IT->src << " " << IT->dst << endl;
+			int gEdge = g->query(src[i], dst[i], 0);
+			int tcmEdge = tcm.edgeQuery((const unsigned char*)src[i], (const unsigned char*)dst[i],
+				strlen(src[i]), strlen(dst[i]));
+			int gss12Edge = uns12.edgeQuery(src[i], dst[i]);
+			int gss16Edge = uns16.edgeQuery(src[i], dst[i]);
+			tcmEdgeAE += tcmEdge - gEdge;
+			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
+			gss12EdgeAE += gss12Edge - gEdge;
+			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
+			gss16EdgeAE += gss16Edge - gEdge;
+			gss16EdgeRE += (gss16Edge - gEdge) / gEdge;
+			
+		}
+		finish = clock();
+		cout << "Query Time" << double(finish - start) / CLOCKS_PER_SEC << endl;
 		edgeAAE << w << "\t" << gss12EdgeAE / edgeNum << "\t" << gss16EdgeAE / edgeNum << "\t" << tcmEdgeAE / edgeNum << endl;
 		edgeARE << w << "\t" << gss12EdgeRE / edgeNum << "\t" << gss16EdgeRE / edgeNum << "\t" << tcmEdgeRE / edgeNum << endl;
 	}

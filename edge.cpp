@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 		fin >> s5;
 		fin >> s6;
 		fin >> s7;
+		cout << s1 " "  << s2 << " " << s3 << " " << s4 << endl;
 		int weight;
 		weight = 1;
 		int timestamp;
@@ -60,6 +61,7 @@ int main(int argc, char *argv[])
 		strcpy(tmp.dst,s4);
 		edgeSet.insert(tmp);
 	}
+	return 0
 	cout << "unique edge num:" << edgeSet.size() << endl;
 
 	fin.close();

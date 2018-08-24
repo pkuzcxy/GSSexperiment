@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
 		dst.push_back(s4);
 		//wei.push_back(weight);
 		inputEdge  tmp;
-		tmp.src = s3;
-		tmp.dst = s4;
+		strcpy(tmp.src,s3);
+		strcoy(tmp.dst,s4);
 		edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;
@@ -95,7 +95,6 @@ int main(int argc, char *argv[])
 	for (int w = low; w <= high; w += interval)
 	{
 
-		exp_begin = clock();
 		int tcm_w = w*4.5;//tcm 32bit/room,gss (2fsize+4bit index+32bit)/room
 		TCM tcm(tcm_w, tcm_w, 4);
 		int n = src.size();
@@ -160,7 +159,7 @@ int main(int argc, char *argv[])
 
 		double d2 = double(finish - start) / CLOCKS_PER_SEC;
 		d2 = n / d2 / MILLION;
-		cout << "GSS16 insertion done:" << d1 << endl;
+		cout << "GSS16 insertion done:" << d2 << endl;
 
 		int sum = 0;
 		for (int i = 0; i < uns16.n; i++)

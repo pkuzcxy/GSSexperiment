@@ -14,11 +14,11 @@ using namespace std;
 class inputEdge
 {
 public:
-	char src[16];
-	char dst[16];
+	string src;
+	string dst;
 	bool operator <(const inputEdge & a)const
 	{
-		if (strcmp(src, a.src) == 0 && strcmp(dst, a.dst) == 0)return false;
+		if (src==a.src && dst==a.dst)return false;
 		return true;
 	}
 };
@@ -33,26 +33,26 @@ int main(int argc, char *argv[])
 	ifstream fin(filename);
 	graph *g = new graph();
 
-	vector<char*> src;
+	vector<string> src;
 	set<inputEdge> edgeSet;
-	vector<char*> dst;
-	vector<int> wei;
-	char  s1[16];
+	vector<string> dst;
+	string s1;
 	while (fin >> s1)
 	{
-		char s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
+		//char s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
+		string s2, s3, s4, s5, s6, s7;
 		fin >> s2;
 		fin >> s3;
 		fin >> s4;
 		fin >> s5;
 		fin >> s6;
 		fin >> s7;
-		if (strlen(s3) == 0 || strlen(s4) == 0)continue;
+		if (s3.length()==0||s4.length()==0)continue;
 		src.push_back(s3);
 		dst.push_back(s4);
 		inputEdge  tmp;
-		strcpy(tmp.src, s3);
-		strcpy(tmp.dst, s4);
+		tmp.src=s3;
+		tmp.dst=s4;
 		edgeSet.insert(tmp);
 	}
 	cout << "unique edge num:" << edgeSet.size() << endl;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
 			int gEdge = g->query(IT->src, IT->dst, 0);
-
+			if (gEdge == 0)cout << IT->src << endl;
 			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
 			gss12EdgeAE += gss12Edge - gEdge;
 			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
-			tcm.insert((const unsigned char*)src[i], (const unsigned char*)dst[i], 1, strlen(src[i]), strlen(dst[i]));
+			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), wei[i], src[i].length(), dst[i].length());
 		}
 		finish = clock();
 		double d3 = double(finish - start) / CLOCKS_PER_SEC;
@@ -188,8 +188,8 @@ int main(int argc, char *argv[])
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
 			int gEdge = g->query(IT->src, IT->dst, 0);
-			int tcmEdge = tcm.query((const unsigned char*)(IT->src), (const unsigned char*)(IT->dst),
-				strlen(IT->src), strlen(IT->dst));
+			int tcmEdge = tcm.query(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
+				(IT->src).length(), (IT->dst).length());
 			tcmEdgeAE += tcmEdge - gEdge;
 			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
 			countEdge++;

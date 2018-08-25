@@ -44,7 +44,10 @@ int main(int argc, char *argv[])
 	{
 		char s2[16], s5[16], s6[16], s7[16];
 		char * s3 = new char[12];
+		memset(s3, '\0', sizeof(char) * 12);
+
 		char * s4 = new char[12];
+		memset(s4, '\0', sizeof(char) * 12);
 		fin >> s2;
 		fin >> s3;
 		fin >> s4;
@@ -52,8 +55,8 @@ int main(int argc, char *argv[])
 		fin >> s6;
 		fin >> s7;
 		if (strlen(s3) == 0 || strlen(s4) == 0)continue;
-		src.push_back(s3);
-		dst.push_back(s4);
+		src[n]=s3;
+		dst[n]=s4;
 		++n;
 		inputEdge  tmp;
 		strcpy(tmp.src, s3);

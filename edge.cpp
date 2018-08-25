@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 		for (int i = 0; i < n; ++i)
 		{
 
-			uns16.insert(src[i], dst[i], wei[i]);
+			uns16.insert(src[i], dst[i], 1);
 		}
 		finish = clock();
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
-			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), wei[i], src[i].length(), dst[i].length());
+			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), 1, src[i].length(), dst[i].length());
 		}
 		finish = clock();
 		double d3 = double(finish - start) / CLOCKS_PER_SEC;

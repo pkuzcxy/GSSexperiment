@@ -1,5 +1,58 @@
 #include<string>
+#include<vector>
+#include<algorithm>
 using namespace std;
+unsigned int(*hfunc[14])(const unsigned char*, unsigned int) =
+{
+	BOB1,
+	BOB2,
+	BOB3,
+	BOB4,
+	PJW,
+	DJB,
+	CRC32,
+	OCaml,
+	SML,
+	STL,
+	FNV32,
+	Hsieh,
+	RSHash
+};
+struct  hashvalue
+{
+	unsigned int key;
+	int IDnum;
+};
+bool mycomp(const hashvalue &hv1, const hashvalue &hv2)
+{
+	return hv1.key<hv2.key;
+}
+int countjoin( vector<hashvalue> &V1, vector<hashvalue> &V2)
+{
+ sort(V1.begin(), V1.end(),mycomp);
+ sort(V2.begin(),V2.end(),mycomp);
+ int i1=0,i2=0;
+ int count=0;
+ while(i1<V1.size())
+ {
+ 	if (i2>=V2.size()) return count;
+ 	while(V2[i2].key<V1[i1].key)
+ 	{
+ 		i2++;
+ 		if (i2>=V2.size()) return count;
+ 	}
+ 	if(V2[i2].key==V1[i1].key)
+ 	{
+ 		count+=1;//V1[i1].IDnum;
+ 		i1++;
+ 		i2++;
+ 		continue;
+	 }
+	if(V2[i2].key>V1[i1].key)
+		i1++;
+  }
+  return count; 
+}
 template<class T>
 class hashTableNode
 {
@@ -26,7 +79,9 @@ public:
 	{
 		tableSize = s;
 		table = new hashTableNode<T>*[s];
-		memset(table, NULL, tableSize * sizeof(hashTableNode<T>*));
+		for(int i=0;i<s;i++)
+			table[i]=NULL;
+	//	memset(table, NULL, tableSize * sizeof(hashTableNode<T>*));
 	}
 	~hashTable()
 	{
@@ -73,4 +128,30 @@ public:
 			table[hash%tableSize] = newNode;
 		}
 	}
+	void getID(unsigned int hash, vector<string>&IDs) 
+	{
+		hashTableNode<T> *np;
+		np=table[hash%tableSize];
+		for(;np != NULL; np=np->next)
+		{
+			if(np->key==hash)
+			{
+				IDs.push_back(np->value);
+			}
+		}
+		return;
+	}
+	int countIDnums(unsigned int hash)
+{
+	int num=0;
+	hashTableNode<T> *np;
+	np=table[hash%tableSize];
+	for(;np!=NULL;np=np->next)
+	{
+		if(np->key==hash)
+			num++;
+	}
+	return num;
+}
 };
+

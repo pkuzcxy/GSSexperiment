@@ -10,15 +10,16 @@
 #include<time.h>
 #include"Graph.h" 
 #define MILLION 1000000 
+#define TOTALNUM 450000000
 using namespace std;
 class inputEdge
 {
 public:
-	string src;
-	string dst;
+	char src[16];
+	char dst[16];
 	bool operator <(const inputEdge & a)const
 	{
-		if (src==a.src && dst==a.dst)return false;
+		if (strcmp(src, a.src) == 0 && strcmp(dst, a.dst) == 0)return false;
 		return true;
 	}
 };
@@ -33,31 +34,35 @@ int main(int argc, char *argv[])
 	ifstream fin(filename);
 	graph *g = new graph();
 
-	vector<string> src;
+	char ** src = new char*[TOTALNUM];
 	set<inputEdge> edgeSet;
-	vector<string> dst;
-	string s1;
+	char ** dst = new char*[TOTALNUM];
+	vector<int> wei;
+	char  s1[16];
+	int n = 0;
 	while (fin >> s1)
 	{
-		//char s2[16], s3[16], s4[16], s5[16], s6[16], s7[16];
-		string s2, s3, s4, s5, s6, s7;
+		char s2[16], s5[16], s6[16], s7[16];
+		char * s3 = new char[12];
+		char * s4 = new char[12];
 		fin >> s2;
 		fin >> s3;
 		fin >> s4;
 		fin >> s5;
 		fin >> s6;
 		fin >> s7;
-		if (s3.length()==0||s4.length()==0)continue;
+		if (strlen(s3) == 0 || strlen(s4) == 0)continue;
 		src.push_back(s3);
 		dst.push_back(s4);
+		++n;
 		inputEdge  tmp;
-		tmp.src=s3;
-		tmp.dst=s4;
+		strcpy(tmp.src, s3);
+		strcpy(tmp.dst, s4);
 		edgeSet.insert(tmp);
 	}
+	cout << n << endl;;
 	cout << "unique edge num:" << edgeSet.size() << endl;
 	fin.close();
-	int n = src.size();
 	clock_t start, finish;
 	start = clock();
 	for (int i = 0; i < n; ++i)
@@ -82,7 +87,6 @@ int main(int argc, char *argv[])
 
 		int uns12_w = 1.07*w;
 		GSS uns12(uns12_w, 12, 16, 1, 4, 12);
-		int n = src.size();
 
 		clock_t start, finish;
 
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
 			int gEdge = g->query(IT->src, IT->dst, 0);
-			if (gEdge == 0)cout << IT->src << endl;
+			if (gEdge == 0) cout << IT->src << endl;
 			int gss12Edge = uns12.edgeQuery(IT->src, IT->dst);
 			gss12EdgeAE += gss12Edge - gEdge;
 			gss12EdgeRE += (gss12Edge - gEdge) / gEdge;
@@ -124,7 +128,7 @@ int main(int argc, char *argv[])
 
 		int uns16_w = w;
 		GSS uns16(uns16_w, 12, 16, 1, 4, 16);
-		int n = src.size();
+
 
 		clock_t start, finish;
 
@@ -166,14 +170,14 @@ int main(int argc, char *argv[])
 	{
 		int tcm_w = w*24.5;
 		TCM tcm(tcm_w, tcm_w, 4);
-		int n = src.size();
+
 
 		clock_t start, finish;
 
 		start = clock();
 		for (int i = 0; i < n; ++i)
 		{
-			tcm.insert(((const unsigned char*)src[i].c_str()), ((const unsigned char*)dst[i].c_str()), 1, src[i].length(), dst[i].length());
+			tcm.insert((const unsigned char*)src[i], (const unsigned char*)dst[i], 1, strlen(src[i]), strlen(dst[i]));
 		}
 		finish = clock();
 		double d3 = double(finish - start) / CLOCKS_PER_SEC;
@@ -188,8 +192,8 @@ int main(int argc, char *argv[])
 		for (IT = edgeSet.begin(); IT != edgeSet.end(); ++IT)
 		{
 			int gEdge = g->query(IT->src, IT->dst, 0);
-			int tcmEdge = tcm.query(((const unsigned char*)(IT->src).c_str()), ((const unsigned char*)(IT->dst).c_str()),
-				(IT->src).length(), (IT->dst).length());
+			int tcmEdge = tcm.query((const unsigned char*)(IT->src), (const unsigned char*)(IT->dst),
+				strlen(IT->src), strlen(IT->dst));
 			tcmEdgeAE += tcmEdge - gEdge;
 			tcmEdgeRE += (tcmEdge - gEdge) / gEdge;
 			countEdge++;
@@ -206,6 +210,12 @@ int main(int argc, char *argv[])
 		edgeAAE << w << "\t" << gss12AAERV[i] << "\t" << gss16AAERV[i] << "\t" << tcmAAERV[i] << endl;
 		edgeARE << w << "\t" << gss12ARERV[i] << "\t" << gss16ARERV[i] << "\t" << tcmARERV[i] << endl;
 	}
-
+	for (int i = 0; i < n; ++i)
+	{
+		delete[] src[i];
+		delete[] dst[i];
+	}
+	delete[] src;
+	delete[] dst;
 	return 0;
 }

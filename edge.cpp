@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 	vector<double> tcmARERV;
 	for (int w = low; w <= high; w += interval)
 	{
-		int tcm_w = w*24.5;
+		int tcm_w = w*2.13;
 		TCM tcm(tcm_w, tcm_w, 4);
 
 
